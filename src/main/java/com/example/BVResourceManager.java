@@ -11,19 +11,23 @@ import java.nio.file.Paths;
  */
 public class BVResourceManager {
 
-    Gson g = new Gson();
+    private Gson g = new Gson();
+    private Election election;
 
     public BVResourceManager(String file) {
         initConfig(file);
-
     }
 
     private void initConfig(String configFileName) {
         try {
             String content = new String(Files.readAllBytes(Paths.get(configFileName)));
-            Election election = g.fromJson(content, Election.class);
+            election = g.fromJson(content, Election.class);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public Election getElection() {
+        return election;
     }
 }
