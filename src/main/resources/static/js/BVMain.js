@@ -8,3 +8,17 @@ angular.module('BVMain', [])
         $scope.candidates = data.data;
     })
 })
+
+.controller('registration', function($scope, $http) {
+    $scope.submit = function() {
+        var id = $scope.id
+        $http.get('/register/' + id).then(function(data) {
+            if (data.data > 0) {
+                $scope.privateKey = data.data;
+            } else {
+                $scope.privateKey = "";
+            }
+        })
+    }
+
+})

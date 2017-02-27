@@ -10,5 +10,12 @@
       "name" : "Falz D. Bahd-Guy",
       "id" : "2"
     }
+  ],
+  "voters" : [
+    {
+      "name" : "Omotola T. Babasola",
+      "id" : "0001",
+      "publicAddress" : ""
+    }
   ]
 }
