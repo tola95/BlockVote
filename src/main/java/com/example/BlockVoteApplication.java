@@ -33,6 +33,12 @@ public class BlockVoteApplication {
 		return resourceManager.getElection().generateRandomKey(id);
 	}
 
+	@RequestMapping("/vote/{privateKey}/{votedCandidate}")
+	public void vote(@PathVariable("privateKey") String privateKey,
+					 @PathVariable("votedCandidate") String votedCandidate) {
+
+	}
+
 	//ToDo: Billboard of public keys for election
 	@Configuration
 	@Order(SecurityProperties.ACCESS_OVERRIDE_ORDER)

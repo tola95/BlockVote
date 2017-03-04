@@ -19,11 +19,38 @@
     <div ng-controller="registration">
         <form ng-submit="submit()">
             First Name: <input type="text" ng-model="id">
-            <input type="submit" id="submit" value="Register" />
+            <input type="submit" id="register" value="Register" />
         </form>
 
         <h1>Your private key is: {{privateKey}}</h1>
     </div>
 
+    <div ng-controller="voting as vc">
+        <!--<form ng-submit="submit()">
+            <label >
+                <input type="radio" name="v" ng-model="vars.id" value="A">
+                A
+            </label><br/>
+            <label >
+                <input type="radio" name="v" ng-model="vars.id" value="B">
+                B
+            </label><br/>
+            <input type="submit" id="vote" value="Vote" />
+
+        </form>-->
+       <form ng-submit="submit()">
+            <label ng-repeat="candidate in candidates">
+                <input type="radio" name="v" ng-model="vc.vars.id" ng-value="candidate.name">
+                {{candidate.name}}
+            </label><br/>
+            <input type="submit" id="vote" value="Vote" />
+
+        </form>
+
+        <h1>{{vc.vars.voteMessage}}</h1>
+
+    </div>
+
 </body>
+
 </html>
