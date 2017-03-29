@@ -36,6 +36,7 @@ public class BlockVoteApplication {
 	@RequestMapping("/vote/{privateKey}/{votedCandidate}")
 	public void vote(@PathVariable("privateKey") String privateKey,
 					 @PathVariable("votedCandidate") String votedCandidate) {
+		resourceManager.addVoteToBlockchain(privateKey, votedCandidate);
 
 	}
 
