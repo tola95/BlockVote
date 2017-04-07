@@ -6,6 +6,7 @@ import org.web3j.crypto.CipherException;
 import org.web3j.crypto.Credentials;
 import org.web3j.crypto.WalletUtils;
 import org.web3j.protocol.Web3j;
+import org.web3j.protocol.core.methods.request.RawTransaction;
 import org.web3j.protocol.core.methods.response.Web3ClientVersion;
 import org.web3j.protocol.http.HttpService;
 
@@ -57,10 +58,11 @@ public class BVResourceManager {
     }
 
     private void interfaceWithBC() {
-        Web3j web3 = Web3j.build(new HttpService());
+        Web3j web3 = Web3j.build(new HttpService(/*"http://146.169.47.73:8545/"*/));
         Credentials credentials = null;
         try {
-            credentials = WalletUtils.loadCredentials("Karmakazee1", "/Users/OmotolaBabasola1/Library/Ethereum/testnet/keystore/UTC--2017-02-03T22-25-59.698779390Z--360b1868e121ea8a15dce6319733deea48435657");
+            credentials = WalletUtils.loadCredentials("", "/Users/OmotolaBabasola1/BlockVoteBlockChain/keystore/UTC--2017-04-04T16-26-05.481773384Z--1ba5dfa4223d4ac913bd5ed8e9ee770e26133a1f"
+                            /*"/root/.ethereum/testnet/keystore/UTC--2017-03-31T21-37-12.294000000Z--988c58e40cd39c632949db85ff9c7c8f1a7e9360.json"*/);
         } catch (IOException e) {
             e.printStackTrace();
         } catch (CipherException e) {
@@ -75,29 +77,6 @@ public class BVResourceManager {
         } catch (ExecutionException e) {
             e.printStackTrace();
         }
-
-        String clientVersion = web3ClientVersion.getWeb3ClientVersion();
-        Greeter contract = null;
-        try {
-            contract = Greeter.deploy(web3, credentials,
-                    BigInteger.ZERO, BigInteger.ZERO, BigInteger.ZERO,
-                    new Utf8String("Hello Blockchain World")).get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        Utf8String greeting = null;
-        try {
-            greeting = contract.greet().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-
-        String greetingString = greeting.getTypeAsString();
     }
 
     public Election getElection() {

@@ -33,16 +33,23 @@ angular.module('BVMain', [])
     }
 })
 
-.controller('registration', function($scope, $http, sharedData) {
+.controller('checkin', function($scope, $http, sharedData) {
     $scope.submit = function() {
         var id = $scope.id;
-        $http.get('/register/' + id).then(function(data) {
+        $http.get('/checkin/' + id).then(function(data) {
             if (data.data > 0) {
                 sharedData.setPrivateKey(data.data);
                 $scope.privateKey = sharedData.getPrivateKey();
             } else {
                 $scope.privateKey = "";
             }
+        })
+    }
+
+    $scope.submit2 = function() {
+        var pk = $scope.pk;
+        $http.get('/register/' + pk + $scope.id).then(function (data) {
+
         })
     }
 

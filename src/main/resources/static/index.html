@@ -16,13 +16,19 @@
         </div>
     </div>
 
-    <div ng-controller="registration">
+    <div ng-controller="checkin">
         <form ng-submit="submit()">
-            First Name: <input type="text" ng-model="id">
-            <input type="submit" id="register" value="Register" />
+            SSN: <input type="text" ng-model="id">
+            <input type="submit" id="checkin" value="Check In" />
         </form>
 
         <h1>Your private key is: {{privateKey}}</h1>
+
+        <form ng-submit="submit2()">
+            First Name: <input type="text" ng-model="pk">
+            <input type="submit" id="register" value="Register" />
+        </form>
+
     </div>
 
     <div ng-controller="voting as vc">

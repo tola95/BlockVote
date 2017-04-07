@@ -13,9 +13,9 @@
   ],
   "voters" : [
     {
-      "name" : "Omotola T. Babasola",
+      "name" : "Omotola Babasola",
       "id" : "0001",
-      "publicAddress" : ""
+      "registered" : ""
     }
   ]
 }
