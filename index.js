@@ -3,7 +3,7 @@ var app = express();
 var Web3 = require('web3');
 var fs = require('fs');
 
-app.use(express.static("src/main/resources/static"));
+app.use(express.static("DApp"));
 
 //Read BVConfigs file into memory
 var BVConfigs = JSON.parse(fs.readFileSync('BVConfigs', 'utf8'));
@@ -67,6 +67,86 @@ var voterBoardABI = [{
 var voterBoardAddress = "0x883961074c6381e1f4618f12ac06dc5b9804f425";
 var voterBoard = web3.eth.contract(voterBoardABI).at(voterBoardAddress);
 
+var electionABI = [{
+  constant: false,
+  inputs: [{
+    name: "candidate",
+    type: "bytes32"
+  }],
+  name: "countVotes",
+  outputs: [{
+    name: "",
+    type: "uint8"
+  }],
+  payable: false,
+  type: "function"
+}, {
+  constant: false,
+  inputs: [],
+  name: "kill",
+  outputs: [],
+  payable: false,
+  type: "function"
+}, {
+  constant: true,
+  inputs: [{
+    name: "",
+    type: "bytes32"
+  }],
+  name: "voteTable",
+  outputs: [{
+    name: "",
+    type: "uint8"
+  }],
+  payable: false,
+  type: "function"
+}, {
+  constant: false,
+  inputs: [{
+    name: "candidate",
+    type: "bytes32"
+  }],
+  name: "isValidCandidate",
+  outputs: [{
+    name: "",
+    type: "bool"
+  }],
+  payable: false,
+  type: "function"
+}, {
+  constant: false,
+  inputs: [{
+    name: "candidate",
+    type: "bytes32"
+  }],
+  name: "vote",
+  outputs: [],
+  payable: false,
+  type: "function"
+}, {
+  constant: true,
+  inputs: [{
+    name: "",
+    type: "uint256"
+  }],
+  name: "candidateList",
+  outputs: [{
+    name: "",
+    type: "bytes32"
+  }],
+  payable: false,
+  type: "function"
+}, {
+  inputs: [{
+    name: "_candidateList",
+    type: "bytes32[]"
+  }],
+  payable: true,
+  type: "constructor"
+}];
+var electionAddress = "0x97ec7b30d6376cd74bfe24c16c0053f8f7f58272";
+var election = web3.eth.contract(electionABI).at(electionAddress);
+
 app.get('/', function (req, res) {
   res.send(index.html);
 });
@@ -110,11 +190,16 @@ app.get('/register/:publicKey/:ssn', function (req, res) {
   res.send("You are not eligible to vote in this election");
 });
 
+app.get('/vote/:candidate', function (req, res) {
+  var candidate = req.params.candidate;
+
+})
+
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
   console.log(BVConfigs.name);
-  console.log(voterBoard.register("1234"));
-  console.log(voterBoard.verifyRegistered("1234"));
+  //console.log(voterBoard.register("1234"));
+  //console.log(voterBoard.verifyRegistered("1234"));
 });
 
 //Random Number Generator

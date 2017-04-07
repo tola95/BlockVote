@@ -72,7 +72,7 @@ angular.module('BVMain', [])
 
     $scope.submit = function() {
         var votedCandidate = $scope.vars.id;
-        $http.get('/vote/' + sharedData.getPrivateKey() + '/' + votedCandidate).then(function (data) {
+        $http.get('/vote/' + votedCandidate).then(function (data) {
             $scope.vars.voteMessage = "Thanks for voting. You have voted for " + votedCandidate;
         })
     }
