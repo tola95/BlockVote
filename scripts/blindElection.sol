@@ -25,16 +25,24 @@ contract blindElection is mortal {
     }
 
     // Important Entities
-
     address public chairPerson; //Party in charge if administering the election
-
     mapping(address => Voter) public voters; //Mapping of voters addresses to objects
-
     Candidate[] public candidates; //List of candidate objects
 
-    function blindElection(bytes32[] candidateNames) {
+    //Time Considerations
+    uint public electionStart; //Time the election started
+    uint public electionDuration; //How long the election will last
+    bool electionEnded; //set to true at the end of the election
+
+    //Events to be fired on changes, for logging purposes
+    event Voted(address voter, uint candidate);
+    event ElectionEnded(address winner, uint amount);
+
+    function blindElection(bytes32[] candidateNames, uint _electionDuration) {
         chairPerson = msg.sender;
         voters[chairPerson].eligible = true;
+        electionDuration = _electionDuration;
+        electionStart = now;
         for (uint i = 0; i < candidateNames.length; i++) {
             candidates.push(Candidate({
                 name: candidateNames[i],
@@ -52,12 +60,13 @@ contract blindElection is mortal {
 
     function vote(uint candidateIndex) {
         Voter sender = voters[msg.sender];
-        if (sender.voted || sender.eligible != true) {
+        if (sender.voted || sender.eligible != true || electionEnded) {
             throw;
         }
         sender.voted = true;
         sender.vote = candidateIndex;
         candidates[candidateIndex].votes += 1;
+        Voted(msg.sender, candidateIndex);
     }
 
     function countVotes() constant
@@ -69,6 +78,8 @@ contract blindElection is mortal {
                 winningCandidate = i;
             }
         }
+        electionEnded = true;
+        event ElectionEnded(address winner, uint amount);
     }
 
     function winnerName() constant
