@@ -17,6 +17,7 @@ contract blindElection is mortal {
         bool eligible; //determines if party is eligible to vote
         bool voted;
         uint vote; //index of candidate voted for
+        uint blindedVote; //blinded vote of this candidate
     }
 
     struct Candiate {
@@ -31,18 +32,22 @@ contract blindElection is mortal {
 
     //Time Considerations
     uint public electionStart; //Time the election started
-    uint public electionDuration; //How long the election will last
+    uint public electionEnd; //How long the election will last
     bool electionEnded; //set to true at the end of the election
 
     //Events to be fired on changes, for logging purposes
     event Voted(address voter, uint candidate);
     event ElectionEnded(address winner, uint amount);
 
-    function blindElection(bytes32[] candidateNames, uint _electionDuration) {
+    //Modifiers for validating time constrained inputs
+    modifier onlyBefore(uint _time) { if (now >= _time) throw; _; }
+    modifier onlyAfter(uint _time) { if (now <= _time) throw; _; }
+
+    function blindElection(bytes32[] candidateNames, uint electionDuration) {
         chairPerson = msg.sender;
         voters[chairPerson].eligible = true;
-        electionDuration = _electionDuration;
         electionStart = now;
+        electionEnd = electionStart + electionDuration;;
         for (uint i = 0; i < candidateNames.length; i++) {
             candidates.push(Candidate({
                 name: candidateNames[i],
@@ -58,7 +63,30 @@ contract blindElection is mortal {
         voters[voter].eligible = true;
     }
 
-    function vote(uint candidateIndex) {
+    function blindVote(uint _blindedVote) {
+        Voter sender = voters[msg.sender];
+        if (sender.voted || sender.eligible != true || electionEnded) {
+            throw;
+        }
+        sender.voted = true;
+        sender.blindedVote = _blindedVote;
+
+    }
+
+    function revealVote(uint candidateIndex, uint secret) {
+        Voter sender = voters[msg.sender];
+        if (sender.blindedVote != keccak256(candidateIndex, secret)) {
+            throw;
+        }
+        sender.vote = candidateIndex;
+        candidates[candidateIndex].votes += 1;
+        Voted(msg.sender, candidateIndex);
+    }
+
+    //Moot atm
+    function vote(uint candidateIndex)
+     payable
+     onlyBefore(electionEnd) {
         Voter sender = voters[msg.sender];
         if (sender.voted || sender.eligible != true || electionEnded) {
             throw;
