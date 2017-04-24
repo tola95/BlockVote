@@ -85,10 +85,10 @@ contract blindElection is mortal {
 
     //Moot atm
     function vote(uint candidateIndex)
-     payable
-     onlyBefore(electionEnd) {
+    payable
+    onlyBefore(electionEnd) {
         Voter sender = voters[msg.sender];
-        if (sender.voted || sender.eligible != true || electionEnded) {
+        if (sender.voted || sender.eligible != true ) {
             throw;
         }
         sender.voted = true;
@@ -98,7 +98,8 @@ contract blindElection is mortal {
     }
 
     function countVotes() constant
-            returns (uint winningCandidate) {
+    returns (uint winningCandidate)
+    onlyAfter(electionEnd) {
         uint winningVoteCount = 0;
         for (uint i = 0; i < candiates.length; i++) {
             if (candidates[i].votes > winningVoteCount) {

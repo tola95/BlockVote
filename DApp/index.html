@@ -6,7 +6,9 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.2/angular.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
     <script src="BVMain.js"></script>
+    <script src="GethInterfaceBundle.js"></script>
 </head>
 
 <body class="container" ng-app="BVMain">
@@ -24,16 +26,15 @@
         <tbody>
         <tr ng-repeat="candidate in candidates">
             <td>{{candidate.name}}</td>
-            <td id="candidate-1"></td>
+            <td id="{{candidate.name}}"></td>
         </tr>
         </tbody>
     </table>
 </div>
-<form ng-submit="submit()">
-    <input type="text" id="candidate" ng-model="candidate"/>
+<form id="voteForm">
+    <input type="text" id="candidate"/>
     <input type="submit" id="vote" value="Vote" class="btn btn-primary"/>
 </form>
-
 </div>
 </body>
 </html>

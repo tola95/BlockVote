@@ -169,7 +169,7 @@ app.get('/checkin/:ssn/', function (req, res) {
   }
   res.send("You are not eligible to vote in this election");
 });
-*/
+
 
 //Incomplete
 app.get('/register/:publicKey/:ssn', function (req, res) {
@@ -189,17 +189,16 @@ app.get('/register/:publicKey/:ssn', function (req, res) {
   }
   res.send("You are not eligible to vote in this election");
 });
+ */
 
 app.get('/vote/:candidate', function (req, res) {
   var candidate = req.params.candidate;
 
-})
+});
 
 app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
   console.log(BVConfigs.name);
-  //console.log(voterBoard.register("1234"));
-  //console.log(voterBoard.verifyRegistered("1234"));
 });
 
 //Random Number Generator
