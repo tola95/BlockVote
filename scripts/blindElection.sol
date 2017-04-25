@@ -14,40 +14,40 @@ contract mortal {
 contract blindElection is mortal {
 
     struct Voter {
-        bool eligible; //determines if party is eligible to vote
+        bool eligible;
         bool voted;
-        uint vote; //index of candidate voted for
-        uint blindedVote; //blinded vote of this candidate
+        uint vote;
+        bytes32 blindedVote;
     }
 
-    struct Candiate {
-        bytes32 name; //Candidate Name
-        uint votes; //Number of candidate votes
+    struct Candidate {
+        bytes32 name;
+        uint votes;
     }
 
-    // Important Entities
-    address public chairPerson; //Party in charge if administering the election
-    mapping(address => Voter) public voters; //Mapping of voters addresses to objects
-    Candidate[] public candidates; //List of candidate objects
+    /* Important Entities */
+    address public chairPerson; /*Party in charge if administering the election*/
+    mapping(address => Voter) public voters; /*Mapping of voters addresses to objects*/
+    Candidate[] public candidates; /*List of candidate objects*/
 
-    //Time Considerations
-    uint public electionStart; //Time the election started
-    uint public electionEnd; //How long the election will last
-    bool electionEnded; //set to true at the end of the election
+    /*Time Considerations*/
+    uint public electionStart; /*Time the election started*/
+    uint public electionEnd; /*How long the election will last*/
+    bool electionEnded; /*set to true at the end of the election*/
 
-    //Events to be fired on changes, for logging purposes
+    /*Events to be fired on changes, for logging purposes
     event Voted(address voter, uint candidate);
-    event ElectionEnded(address winner, uint amount);
+    event ElectionEnded(address winner, uint amount);*/
 
-    //Modifiers for validating time constrained inputs
+    /*Modifiers for validating time constrained inputs
     modifier onlyBefore(uint _time) { if (now >= _time) throw; _; }
-    modifier onlyAfter(uint _time) { if (now <= _time) throw; _; }
+    modifier onlyAfter(uint _time) { if (now <= _time) throw; _; }*/
 
     function blindElection(bytes32[] candidateNames, uint electionDuration) {
         chairPerson = msg.sender;
         voters[chairPerson].eligible = true;
         electionStart = now;
-        electionEnd = electionStart + electionDuration;;
+        electionEnd = electionStart + electionDuration;
         for (uint i = 0; i < candidateNames.length; i++) {
             candidates.push(Candidate({
                 name: candidateNames[i],
@@ -63,9 +63,10 @@ contract blindElection is mortal {
         voters[voter].eligible = true;
     }
 
-    function blindVote(uint _blindedVote) {
+    function blindVote(bytes32 _blindedVote) {
         Voter sender = voters[msg.sender];
-        if (sender.voted || sender.eligible != true || electionEnded) {
+        if (sender.voted || sender.eligible != true || electionEnded
+        ) {
             throw;
         }
         sender.voted = true;
@@ -80,13 +81,14 @@ contract blindElection is mortal {
         }
         sender.vote = candidateIndex;
         candidates[candidateIndex].votes += 1;
-        Voted(msg.sender, candidateIndex);
+        /*Voted(msg.sender, candidateIndex);*/
     }
 
-    //Moot atm
+    /*Moot atm*/
     function vote(uint candidateIndex)
     payable
-    onlyBefore(electionEnd) {
+    /*onlyBefore(electionEnd)*/
+    {
         Voter sender = voters[msg.sender];
         if (sender.voted || sender.eligible != true ) {
             throw;
@@ -94,21 +96,22 @@ contract blindElection is mortal {
         sender.voted = true;
         sender.vote = candidateIndex;
         candidates[candidateIndex].votes += 1;
-        Voted(msg.sender, candidateIndex);
+        /*Voted(msg.sender, candidateIndex);*/
     }
 
     function countVotes() constant
     returns (uint winningCandidate)
-    onlyAfter(electionEnd) {
+    /*onlyAfter(electionEnd)*/
+    {
         uint winningVoteCount = 0;
-        for (uint i = 0; i < candiates.length; i++) {
+        for (uint i = 0; i < candidates.length; i++) {
             if (candidates[i].votes > winningVoteCount) {
                 winningVoteCount = candidates[i].votes;
                 winningCandidate = i;
             }
         }
         electionEnded = true;
-        event ElectionEnded(address winner, uint amount);
+        /*ElectionEnded(address winner, uint amount);*/
     }
 
     function winnerName() constant
