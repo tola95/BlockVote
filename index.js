@@ -152,44 +152,12 @@ app.get('/', function (req, res) {
 });
 
 app.get('/candidates', function (req, res) {
-  res.send(BVConfigs.candidates)
+  res.send(BVConfigs.candidates);
 });
 
-/*
-//Improve this later on to use name as well
-app.get('/checkin/:ssn/', function (req, res) {
-  var ssn = req.params.ssn;
-
-  for (var i=0; i<BVConfigs.voters.length; i++) {
-    var voterInfo = BVConfigs.voters[i];
-    if (voterInfo.id == ssn) {
-      var privateKey = randomInt(0, 999999);
-      res.send(privateKey);
-    }
-  }
-  res.send("You are not eligible to vote in this election");
+app.get('/params', function(req, res) {
+  res.send(BVConfigs.params);
 });
-
-
-//Incomplete
-app.get('/register/:publicKey/:ssn', function (req, res) {
-  var ssn = req.params.ssn;
-  var publicKey = req.params.publicKey;
-
-  for (var i=0; i<BVConfigs.voters.length; i++) {
-    var voterInfo = BVConfigs.voters[i];
-    if (voterInfo.id == ssn) {
-      voterInfo.registered = true;
-      voterBoard.register(publicKey);
-
-      var verifyCode = voterBoard.verifyRegistered(publicKey);
-
-      break;
-    }
-  }
-  res.send("You are not eligible to vote in this election");
-});
- */
 
 app.get('/vote/:candidate', function (req, res) {
   var candidate = req.params.candidate;
@@ -200,8 +168,3 @@ app.listen(3000, function () {
   console.log('Example app listening on port 3000!');
   console.log(BVConfigs.name);
 });
-
-//Random Number Generator
-function randomInt (low, high) {
-  return Math.floor(Math.random() * (high - low) + low);
-}

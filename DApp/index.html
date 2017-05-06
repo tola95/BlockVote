@@ -13,28 +13,28 @@
 
 <body class="container" ng-app="BVMain">
 <div ng-controller="home">
-<h1>BlockVote</h1>
-<div class="table-responsive">
+    <h1>BlockVote</h1>
+    <div class="table-responsive">
 
-    <table class="table table-bordered">
-        <thead>
-        <tr>
-            <th>Candidate</th>
-            <th>Votes</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr ng-repeat="candidate in candidates">
-            <td>{{candidate.name}}</td>
-            <td id="{{candidate.name}}"></td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-<form id="voteForm">
-    <input type="text" id="candidate"/>
-    <input type="submit" id="vote" value="Vote" class="btn btn-primary"/>
-</form>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Candidate</th>
+                    <th>Votes</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr ng-repeat="candidate in candidates">
+                    <td>{{candidate.name}}</td>
+                    <td id="{{candidate.name}}"></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <form id="voteForm">
+        <input type="text" id="candidate"/>
+        <input type="submit" id="vote" value="Vote" class="btn btn-primary"/>
+    </form>
 </div>
 </body>
 </html>

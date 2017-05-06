@@ -7,6 +7,7 @@ angular.module('BVMain', [])
         $http.get('/candidates/').then(function(data) {
             $scope.candidates = data.data;
         });
+
     /*
     $scope.submit = function() {
         //$http.get('/vote/' + $scope.candidate).then(function (data) {
