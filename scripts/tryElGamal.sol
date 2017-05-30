@@ -23,10 +23,18 @@ contract mortal {
  */
 contract tryElGamal is mortal {
 
+    struct Voter {
+        bool eligible;
+        bool voted;
+    }
+
     struct Commitment {
         int a;
         int b;
     }
+
+    address public chairPerson; /*Party in charge if administering the election*/
+    mapping(address => Voter) public voters; /*Mapping of voters addresses to objects*/
 
     int public P; /* Prime for the ElGamal Encryption */
     int public Q; /* (P-1)/2 */
@@ -43,7 +51,17 @@ contract tryElGamal is mortal {
         H = _H;
         Q = (P - 1)/2;
         generateLookupTable();
+        chairPerson = msg.sender;
+        voters[chairPerson].eligible = true;
     }
+
+     function giveRightToVote(address voter) {
+         if (msg.sender != chairPerson) {
+             throw;
+         }
+         voters[voter].eligible = true;
+     }
+
 
     function generateLookupTable() private {
         for(int i=0; i<=Q-1; i++){
@@ -61,6 +79,15 @@ contract tryElGamal is mortal {
         int As = mpmod(a, -s, P);
         int gm = mpmod(b * As, 1, P);
         return logG(gm);
+    }
+
+    /*Vote method*/
+    function vote(int x, int y, int a1, int a2, int b1, int b2,
+                int d1, int d2, int r1, int r2, int challenge) returns (bool) {
+        if (!verifyZKP(x,y,a1,a2,b1,b2,d1,d2,r1,r2,challenge)) {
+            return false;
+        }
+        sendCommitment(x, y);
     }
 
     function sendCommitment(int a, int b) {
@@ -113,17 +140,19 @@ contract tryElGamal is mortal {
         return logTable[a];
     }
 
-    function verifyZKP(uint x, uint y, uint a1, uint a2,
-                        uint b1, uint b2, uint d1, uint d2, int r1, int r2, int challenge)
+    /*ToDo: Update to use keccak*/
+    function verifyZKP(int x, int y, int a1, int a2,
+                        int b1, int b2, int d1, int d2, int r1, int r2, int challenge)
                          returns (bool) {
 
-        int g_r1_x_d1 = mpmod(mpmod(G, r1, P) * mpmod(x, d1, P), 1, P);
-        int h_r1_yG_d1 = mpmod(mpmod(H, r1, P) * mpmod(y * G, d1, P), 1, P);
-        int g_r2_x_d2 = mpmod(mpmod(G, r2, P) * mpmod(x, d2, P), 1, P);
-        int h_r2_yG_d2 = mpmod(mpmod(H, r2, P) * mpmod(y * mpmod(G, -1, P), d2, P), 1, P);
-
-        return (challenge == d1 + d2) && (a1 == g_r1_x_d1) && (b1 == h_r1_yG_d1) &&
-            (a2 == g_r2_x_d2) && (b2 == h_r2_yG_d2);
+        return (challenge == d1 + d2) &&
+                (a1 == mpmod(mpmod(G, r1, P) * mpmod(x, d1, P), 1, P)) &&
+                (b1 == mpmod(mpmod(H, r1, P) * mpmod(y * G, d1, P), 1, P)) &&
+                (a2 == mpmod(mpmod(G, r2, P) * mpmod(x, d2, P), 1, P)) &&
+                (b2 == mpmod(mpmod(H, r2, P) * mpmod(y * mpmod(G, -1, P), d2, P), 1, P));
 
     }
 }
+
+
+
