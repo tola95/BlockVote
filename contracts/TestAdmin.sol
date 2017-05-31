@@ -30,12 +30,33 @@ contract TestAdmin is mortal {
     uint8 private counter; /*Counter for authorities*/
     uint8 public noOfAuthorities = 3; /*Number of share colluding authorities*/
 
-    int[] private poly = [27, 29, 71];
+    int[] private poly = [12, 29, 51];
     int private N = 101;
     int[] private shares;
     int[] private s_is;
 
-    function TestAdmin() {
+    int P;
+    int G;
+    int Q;
+    int H;
+
+    function TestAdmin(int _P, int _G) {
+        P = _P;
+        G = _G;
+        H = mpmod(G, poly[0], P);
+        Q = (P - 1)/2;
+    }
+
+    function getP() returns (int){
+        return P;
+    }
+
+    function getG() returns (int) {
+        return G;
+    }
+
+    function getH() returns (int) {
+        returns H;
     }
 
     function requestAuthorityStatus(address contractAd) payable returns (bool) {

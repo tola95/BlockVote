@@ -1027,6 +1027,15 @@ function generateRandomNumber(min, max) {
     return Math.floor(Math.random()*(max-min+1)+min);
 }
 
+function retrieveMessage(x, y, shares, recombCoeffs) {
+    var divider = 1;
+    for (var i=0; i<shares.length; i++) {
+        divider = mpmod(divider * mpmod(x, shares[i], P), recombCoeffs[i], P);
+    }
+    return mpmod(y * mpmod(divider, -1, P), 1, P);
+}
+
+/*
 function createPolynomial(t, s, P) {
     var Q = (P - 1)/2;
     //Polynomial of degree t
@@ -1065,6 +1074,15 @@ function reconcileShares(shares, s_is, P) {
     return addRecombinants(shares, rs, P);
 }
 
+function generateRecombinants(s_is, P) {
+    var rs = [];
+    for (var i=0; i<s_is.length; i++) {
+        var r_i_y = calculateRecombinant(s_is, s_is[i], P);
+        rs.push(r_i_y);
+    }
+    return rs;
+}
+
 function calculateRecombinantHalf(s_is, P, s_i) {
     var b = modularInverse(s_i - s_is, P);
     return mpmod((-s_is + P) * b, 1, P)
@@ -1092,7 +1110,7 @@ function modularInverse(a, m) {
     return -1;
 }
 
-/*
+
 function verifyProof(proof, G, H, P) {
     //var challenge = (web3.sha3(JSON.stringify(proof.co))) % Q;
     var Q = (P - 1)/2;
