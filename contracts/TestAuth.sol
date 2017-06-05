@@ -16,20 +16,80 @@ contract mortal {
     function kill() { if (msg.sender == owner) selfdestruct(owner); }
 }
 
+contract TestAdmin is mortal {
+
+    function TestAdmin() {
+    }
+
+    function getP() constant returns (int){
+    }
+
+    function getG() constant returns (int) {
+    }
+
+    function getH() constant returns (int) {
+    }
+
+    function getNoOfAuthorities() constant returns (uint8) {
+    }
+
+    function requestAuthorityStatus(address contractAd) payable returns (bool) {
+    }
+
+    function checkAuthorityStatus(address contractAd) payable returns (bool) {
+    }
+
+    function getSecretShare(address contractAd) payable returns (int){
+    }
+
+    function getShareIndex(address contractAd) payable returns (int) {
+    }
+
+    function generateShare(uint8 n_i) payable returns (int) {
+    }
+
+    function getLagrangeCoeff(int s_i) returns (int) {
+    }
+
+    function reset() {
+    }
+
+    function getCounter() returns (uint8) {
+    }
+
+    function getRegisteredAuthorities() returns (address[]) {
+    }
+
+    function mpmod(int base, int exponent, int modulus) returns (int) {
+    }
+
+    function calculateRecombinantHalf(int s_is, int P, int s_i) returns (int) {
+    }
+
+    function calculateRecombinant(int s_i) returns (int) {
+    }
+
+    function modularInverse(int a, int m) returns (int) {
+    }
+
+}
+
 contract TestAuth is mortal {
 
     int secret;
-    address testAdminAddress;
-    TestAdmin testAdmin;
+    address testAdminAddress = 0x91b68ea774463362e3e0226d4b868efc006c9a07;
 
     int G;
-    int H;
     int Hj;
     int P;
     int Q;
+    uint8 noOfAuthorities;
 
-    Commitment[] public commitments;
+    Commitment[] commitments;
     mapping (int => int) public logTable;
+
+    Commitment[] authorityCommitments;
+    Share[] shares;
 
     /* ----------------------- Internal Structs -------------------- */
 
@@ -38,14 +98,19 @@ contract TestAuth is mortal {
         int b;
     }
 
+    struct Share {
+        int s_i;
+        int share;
+        int lagrangeCoeff;
+    }
+
     /* ----------------------- Initial configuration functions -------------------- */
 
     function TestAuth() {
-        testAdminAddress = 0x28f48e29ed221e480e32ad18cc24fda902ed4f59;
-        testAdmin = TestAdmin(testAdminAddress);
     }
 
     function requestAuthorityStatus() returns (bool) {
+        TestAdmin testAdmin = TestAdmin(testAdminAddress);
         return testAdmin.requestAuthorityStatus(address(this));
     }
 
@@ -54,12 +119,33 @@ contract TestAuth is mortal {
     }
 
     function setConfigs() {
-        G = testAdmin.getG();
-        H = testAdmin.getH();
-        P = testAdmin.getP();
-        secret = testAdmin.getSecretShare(address(this));
+        TestAdmin testAdmin = TestAdmin(testAdminAddress);
         Hj = mpmod(G, secret, P);
         Q = (P - 1)/2;
+        noOfAuthorities = testAdmin.getNoOfAuthorities();
+    }
+
+    function setSecret() {
+        TestAdmin testAdmin = TestAdmin(testAdminAddress);
+        secret = testAdmin.getSecretShare(address(this));
+    }
+
+    function setGP() {
+        TestAdmin testAdmin = TestAdmin(testAdminAddress);
+        G = testAdmin.getG();
+        P = testAdmin.getP();
+    }
+
+    function getG() returns (int) {
+        return G;
+    }
+
+    function getP() returns (int) {
+        return P;
+    }
+
+    function getH() returns (int) {
+        return Hj;
     }
 
     function getSecret() returns (int) {
@@ -67,6 +153,7 @@ contract TestAuth is mortal {
     }
 
     /* ----------------------- Voting and commitment functions -------------------- */
+    /* --------- Pre Deadline ------- */
 
     function vote(int x, int y, int a1, int a2, int b1, int b2,
                 int d1, int d2, int r1, int r2, int challenge) returns (bool) {
@@ -77,12 +164,27 @@ contract TestAuth is mortal {
         return true;
     }
 
+    function verifyZKP(int x, int y, int a1, int a2,
+                        int b1, int b2, int d1, int d2, int r1, int r2, int challenge)
+                         returns (bool) {
+        TestAdmin testAdmin = TestAdmin(testAdminAddress);
+        int H = testAdmin.getH();
+        return (challenge == d1 + d2) &&
+                (a1 == mpmod(mpmod(G, r1, P) * mpmod(x, d1, P), 1, P)) &&
+                (b1 == mpmod(mpmod(H, r1, P) * mpmod(y * G, d1, P), 1, P)) &&
+                (a2 == mpmod(mpmod(G, r2, P) * mpmod(x, d2, P), 1, P)) &&
+                (b2 == mpmod(mpmod(H, r2, P) * mpmod(y * mpmod(G, -1, P), d2, P), 1, P));
+
+    }
+
     function sendCommitment(int a, int b) {
         commitments.push(Commitment({
             a: a,
             b: b
         }));
     }
+
+    /*--------- Post Deadline -------*/
 
     function tally_g() returns (int) {
         Commitment memory a = tallyCommitments();
@@ -112,16 +214,49 @@ contract TestAuth is mortal {
         return prod;
     }
 
-    function verifyZKP(int x, int y, int a1, int a2,
-                        int b1, int b2, int d1, int d2, int r1, int r2, int challenge)
-                         returns (bool) {
+    /* Receive commitment from another Authority, for tallying purposes */
+    function sendAuthorityCommitment(address authority, int x, int y) {
+        /*ToDo: Check that authority is registered */
 
-        return (challenge == d1 + d2) &&
-                (a1 == mpmod(mpmod(G, r1, P) * mpmod(x, d1, P), 1, P)) &&
-                (b1 == mpmod(mpmod(H, r1, P) * mpmod(y * G, d1, P), 1, P)) &&
-                (a2 == mpmod(mpmod(G, r2, P) * mpmod(x, d2, P), 1, P)) &&
-                (b2 == mpmod(mpmod(H, r2, P) * mpmod(y * mpmod(G, -1, P), d2, P), 1, P));
+        authorityCommitments.push(Commitment({
+            a: x,
+            b: y
+        }));
+    }
 
+    function tallyAuthorityCommitments() private returns (Commitment memory) {
+         if (authorityCommitments.length != noOfAuthorities) {
+             throw;
+         }
+         Commitment memory prod = authorityCommitments[0];
+         for (uint i=1; i<authorityCommitments.length; i++) {
+             prod = multiplyCommitments(prod, commitments[i]);
+         }
+         return prod;
+    }
+
+    function tallyAuthority_g() returns (int) {
+        Commitment memory a = tallyAuthorityCommitments();
+        return a.a;
+    }
+
+    function tallyAuthority_h() returns (int) {
+        Commitment memory a = tallyAuthorityCommitments();
+        return a.b;
+    }
+
+    /* ToDo: Receive Authority shares */
+    function receiveShare(address authority) {
+        TestAdmin testAdmin = TestAdmin(testAdminAddress);
+        int s_i = testAdmin.getShareIndex(authority);
+        int share = testAdmin.getSecretShare(authority);
+        int lagrangeCoeff = testAdmin.getLagrangeCoeff(s_i);
+
+        shares.push(Share({
+            s_i: s_i,
+            share: share,
+            lagrangeCoeff: lagrangeCoeff
+        }));
     }
 
     /* ----------------------- Auxillary Mathematical Functions -------------------- */
@@ -154,37 +289,3 @@ contract TestAuth is mortal {
 
 
 }
-
-contract TestAdmin is mortal {
-
-    function TestAdmin() {
-    }
-
-    function getP() returns (int){
-    }
-
-    function getG() returns (int) {
-    }
-
-    function getH() returns (int) {
-    }
-
-    function requestAuthorityStatus(address contractAd) payable returns (bool) {
-    }
-
-    function checkAuthorityStatus(address contractAd) returns (bool) {
-    }
-
-    function getSecretShare(address contractAd) payable returns (int){
-    }
-
-    function generateShare(uint8 n_i) returns (int) {
-    }
-
-    function mpmod(int base, int exponent, int modulus) returns (int) {
-    }
-
-    function reset() {
-    }
-}
-

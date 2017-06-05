@@ -300,7 +300,30 @@ var tryElGamalABI = [{
 var tryElGamalAddress = "0x97ec7b30d6376cd74bfe24c16c0053f8f7f58272";
 var tryElGamal = web3.eth.contract(tryElGamalABI).at(tryElGamalAddress);
 
-var administratorABI = [{
+var testAdminABI = [{
+    constant: true,
+    inputs: [],
+    name: "getG",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [{
+        name: "contractAd",
+        type: "address"
+    }],
+    name: "getShareIndex",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: true,
+    type: "function"
+}, {
     constant: false,
     inputs: [{
         name: "contractAd",
@@ -311,12 +334,294 @@ var administratorABI = [{
         name: "",
         type: "bool"
     }],
+    payable: true,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
+    name: "kill",
+    outputs: [],
+    payable: false,
+    type: "function"
+}, {
+    constant: true,
+    inputs: [],
+    name: "getNoOfAuthorities",
+    outputs: [{
+        name: "",
+        type: "uint8"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: true,
+    inputs: [],
+    name: "noOfAuthorities",
+    outputs: [{
+        name: "",
+        type: "uint8"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: true,
+    inputs: [],
+    name: "getP",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [{
+        name: "n_i",
+        type: "uint8"
+    }],
+    name: "generateShare",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: true,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [{
+        name: "base",
+        type: "int256"
+    }, {
+        name: "exponent",
+        type: "int256"
+    }, {
+        name: "modulus",
+        type: "int256"
+    }],
+    name: "mpmod",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [{
+        name: "s_i",
+        type: "int256"
+    }],
+    name: "calculateRecombinant",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: true,
+    inputs: [],
+    name: "getH",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [{
+        name: "s_i",
+        type: "int256"
+    }],
+    name: "getLagrangeCoeff",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [{
+        name: "contractAd",
+        type: "address"
+    }],
+    name: "checkAuthorityStatus",
+    outputs: [{
+        name: "",
+        type: "bool"
+    }],
+    payable: true,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
+    name: "getRegisteredAuthorities",
+    outputs: [{
+        name: "",
+        type: "address[]"
+    }],
     payable: false,
     type: "function"
 }, {
     constant: false,
     inputs: [],
-    name: "tally",
+    name: "getCounter",
+    outputs: [{
+        name: "",
+        type: "uint8"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: true,
+    inputs: [{
+        name: "",
+        type: "address"
+    }],
+    name: "authorities",
+    outputs: [{
+        name: "id",
+        type: "uint8"
+    }, {
+        name: "ad",
+        type: "address"
+    }, {
+        name: "registered",
+        type: "bool"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [{
+        name: "s_is",
+        type: "int256"
+    }, {
+        name: "P",
+        type: "int256"
+    }, {
+        name: "s_i",
+        type: "int256"
+    }],
+    name: "calculateRecombinantHalf",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
+    name: "reset",
+    outputs: [],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [{
+        name: "a",
+        type: "int256"
+    }, {
+        name: "m",
+        type: "int256"
+    }],
+    name: "modularInverse",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [{
+        name: "contractAd",
+        type: "address"
+    }],
+    name: "getSecretShare",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: true,
+    type: "function"
+}, {
+    inputs: [{
+        name: "_P",
+        type: "int256"
+    }, {
+        name: "_G",
+        type: "int256"
+    }],
+    payable: false,
+    type: "constructor"
+}];
+var testAdminAddress = "0x91b68ea774463362e3e0226d4b868efc006c9a07";
+var testAdmin = web3.eth.contract(testAdminABI).at(testAdminAddress);
+
+var testAuthABI = [{
+    constant: false,
+    inputs: [],
+    name: "getG",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
+    name: "tally_h",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
+    name: "requestAuthorityStatus",
+    outputs: [{
+        name: "",
+        type: "bool"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [{
+        name: "authority",
+        type: "address"
+    }, {
+        name: "x",
+        type: "int256"
+    }, {
+        name: "y",
+        type: "int256"
+    }],
+    name: "sendAuthorityCommitment",
+    outputs: [],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
+    name: "getAddress",
+    outputs: [{
+        name: "",
+        type: "address"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
+    name: "tally_g",
     outputs: [{
         name: "",
         type: "int256"
@@ -331,19 +636,20 @@ var administratorABI = [{
     payable: false,
     type: "function"
 }, {
-    constant: true,
+    constant: false,
     inputs: [{
-        name: "",
-        type: "uint256"
+        name: "authority",
+        type: "address"
     }],
-    name: "commitments",
-    outputs: [{
-        name: "a",
-        type: "int256"
-    }, {
-        name: "b",
-        type: "int256"
-    }],
+    name: "receiveShare",
+    outputs: [],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
+    name: "setGP",
+    outputs: [],
     payable: false,
     type: "function"
 }, {
@@ -360,19 +666,6 @@ var administratorABI = [{
     payable: false,
     type: "function"
 }, {
-    constant: false,
-    inputs: [{
-        name: "voterAd",
-        type: "address"
-    }],
-    name: "checkRightToVote",
-    outputs: [{
-        name: "",
-        type: "bool"
-    }],
-    payable: false,
-    type: "function"
-}, {
     constant: true,
     inputs: [{
         name: "",
@@ -386,42 +679,19 @@ var administratorABI = [{
     payable: false,
     type: "function"
 }, {
-    constant: true,
+    constant: false,
     inputs: [],
-    name: "noOfAuthorities",
+    name: "getSecret",
     outputs: [{
         name: "",
-        type: "uint8"
+        type: "int256"
     }],
     payable: false,
     type: "function"
 }, {
     constant: false,
-    inputs: [{
-        name: "n_i",
-        type: "uint8"
-    }],
-    name: "generateShare",
-    outputs: [{
-        name: "",
-        type: "int256"
-    }],
-    payable: false,
-    type: "function"
-}, {
-    constant: true,
     inputs: [],
-    name: "G",
-    outputs: [{
-        name: "",
-        type: "int256"
-    }],
-    payable: false,
-    type: "function"
-}, {
-    constant: true,
-    inputs: [],
-    name: "H",
+    name: "getP",
     outputs: [{
         name: "",
         type: "int256"
@@ -449,124 +719,18 @@ var administratorABI = [{
     type: "function"
 }, {
     constant: false,
-    inputs: [{
-        name: "a",
-        type: "int256"
-    }, {
-        name: "b",
-        type: "int256"
-    }, {
-        name: "s",
-        type: "int256"
-    }],
-    name: "revealCommitment",
-    outputs: [{
-        name: "",
-        type: "int256"
-    }],
-    payable: false,
-    type: "function"
-}, {
-    constant: false,
-    inputs: [{
-        name: "contractAd",
-        type: "address"
-    }],
-    name: "checkAuthorityStatus",
-    outputs: [{
-        name: "",
-        type: "bool"
-    }],
-    payable: false,
-    type: "function"
-}, {
-    constant: true,
     inputs: [],
-    name: "P",
+    name: "tallyAuthority_g",
     outputs: [{
         name: "",
         type: "int256"
-    }],
-    payable: false,
-    type: "function"
-}, {
-    constant: true,
-    inputs: [{
-        name: "",
-        type: "address"
-    }],
-    name: "authorities",
-    outputs: [{
-        name: "id",
-        type: "uint8"
-    }, {
-        name: "ad",
-        type: "address"
-    }, {
-        name: "registered",
-        type: "bool"
     }],
     payable: false,
     type: "function"
 }, {
     constant: false,
-    inputs: [{
-        name: "voter",
-        type: "address"
-    }],
-    name: "giveRightToVote",
-    outputs: [{
-        name: "",
-        type: "uint8"
-    }],
-    payable: false,
-    type: "function"
-}, {
-    constant: true,
-    inputs: [{
-        name: "",
-        type: "address"
-    }],
-    name: "voters",
-    outputs: [{
-        name: "eligible",
-        type: "bool"
-    }, {
-        name: "authority",
-        type: "uint8"
-    }, {
-        name: "voted",
-        type: "bool"
-    }],
-    payable: false,
-    type: "function"
-}, {
-    constant: false,
-    inputs: [{
-        name: "a",
-        type: "int256"
-    }],
-    name: "logG",
-    outputs: [{
-        name: "",
-        type: "int256"
-    }],
-    payable: false,
-    type: "function"
-}, {
-    constant: true,
     inputs: [],
-    name: "chairPerson",
-    outputs: [{
-        name: "",
-        type: "address"
-    }],
-    payable: false,
-    type: "function"
-}, {
-    constant: true,
-    inputs: [],
-    name: "Q",
+    name: "getH",
     outputs: [{
         name: "",
         type: "int256"
@@ -576,10 +740,57 @@ var administratorABI = [{
 }, {
     constant: false,
     inputs: [{
-        name: "contractAd",
-        type: "address"
+        name: "x",
+        type: "int256"
+    }, {
+        name: "y",
+        type: "int256"
+    }, {
+        name: "a1",
+        type: "int256"
+    }, {
+        name: "a2",
+        type: "int256"
+    }, {
+        name: "b1",
+        type: "int256"
+    }, {
+        name: "b2",
+        type: "int256"
+    }, {
+        name: "d1",
+        type: "int256"
+    }, {
+        name: "d2",
+        type: "int256"
+    }, {
+        name: "r1",
+        type: "int256"
+    }, {
+        name: "r2",
+        type: "int256"
+    }, {
+        name: "challenge",
+        type: "int256"
     }],
-    name: "getSecretShare",
+    name: "verifyZKP",
+    outputs: [{
+        name: "",
+        type: "bool"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
+    name: "setSecret",
+    outputs: [],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
+    name: "tallyAuthority_h",
     outputs: [{
         name: "",
         type: "int256"
@@ -587,19 +798,62 @@ var administratorABI = [{
     payable: false,
     type: "function"
 }, {
+    constant: false,
+    inputs: [],
+    name: "setConfigs",
+    outputs: [],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
     inputs: [{
-        name: "_P",
+        name: "x",
         type: "int256"
     }, {
-        name: "_G",
+        name: "y",
+        type: "int256"
+    }, {
+        name: "a1",
+        type: "int256"
+    }, {
+        name: "a2",
+        type: "int256"
+    }, {
+        name: "b1",
+        type: "int256"
+    }, {
+        name: "b2",
+        type: "int256"
+    }, {
+        name: "d1",
+        type: "int256"
+    }, {
+        name: "d2",
+        type: "int256"
+    }, {
+        name: "r1",
+        type: "int256"
+    }, {
+        name: "r2",
+        type: "int256"
+    }, {
+        name: "challenge",
         type: "int256"
     }],
+    name: "vote",
+    outputs: [{
+        name: "",
+        type: "bool"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    inputs: [],
     payable: false,
     type: "constructor"
-}];
-var administratorAddress = "0xca31e414b946290d9c462ca9df330f60c1b9ccd4";
-
-var administrator = web3.eth.contract(administratorABI).at(administratorAddress);
+}]
+var testAuthAddress = "0x86036b9e47e4522f3a892f43c0053127722787b3";
+var testAuth = web3.eth.contract(testAuthABI).at(testAuthAddress);
 
 $(function() {
     $("#voteForm").on('submit', function(e) {
@@ -609,7 +863,7 @@ $(function() {
         var params;
         var commitment;
         $.get( "/candidates/", function( data ) {
-            candidates = data
+            candidates = data;
             console.log(candidates);
             var candidate = $('#candidate').val();
             console.log(candidate);
@@ -620,13 +874,18 @@ $(function() {
             }
             $.get("/params", function(data) {
                 params = data;
-                console.log(params);
+                var P = testAdmin.getP();
+                var G = testAdmin.getG();
+                var H = testAdmin.getH();
+                console.log(P.c[0]);
+                console.log(G.c[0]);
+                console.log(H.c[0]);
                 var random = 52;
                 commitment = generateElGamalCommitment(vote, random, params.P, params.G, params.H);
                 console.log(commitment);
                 proof = createZKPForCommitment(vote, random, params.G, params.H, params.P);
                 console.log(proof);
-                tryElGamal.sendCommitment(commitment.a, commitment.b);
+                //tryElGamal.sendCommitment(commitment.a, commitment.b);
 
             });
 
@@ -757,6 +1016,15 @@ function generateRandomNumber(min, max) {
     return Math.floor(Math.random()*(max-min+1)+min);
 }
 
+function retrieveMessage(x, y, shares, recombCoeffs) {
+    var divider = 1;
+    for (var i=0; i<shares.length; i++) {
+        divider = mpmod(divider * mpmod(x, shares[i], P), recombCoeffs[i], P);
+    }
+    return mpmod(y * mpmod(divider, -1, P), 1, P);
+}
+
+/*
 function createPolynomial(t, s, P) {
     var Q = (P - 1)/2;
     //Polynomial of degree t
@@ -795,6 +1063,15 @@ function reconcileShares(shares, s_is, P) {
     return addRecombinants(shares, rs, P);
 }
 
+function generateRecombinants(s_is, P) {
+    var rs = [];
+    for (var i=0; i<s_is.length; i++) {
+        var r_i_y = calculateRecombinant(s_is, s_is[i], P);
+        rs.push(r_i_y);
+    }
+    return rs;
+}
+
 function calculateRecombinantHalf(s_is, P, s_i) {
     var b = modularInverse(s_i - s_is, P);
     return mpmod((-s_is + P) * b, 1, P)
@@ -822,7 +1099,7 @@ function modularInverse(a, m) {
     return -1;
 }
 
-/*
+
 function verifyProof(proof, G, H, P) {
     //var challenge = (web3.sha3(JSON.stringify(proof.co))) % Q;
     var Q = (P - 1)/2;
@@ -918,6 +1195,62 @@ var logs = {
     56 : 51,
     85 : 52
 };
+*/
+
+//Feistel cipher stuff
+
+/*
+function encrypt(message, key, rounds) {
+    var i = 0;
+    while (i<rounds) {
+        message = encryptRound(message, key, i+1);
+        i++;
+    }
+    return message;
+}
+
+function decrypt(message, key, rounds) {
+
+}
+
+function encryptRound(message, key, round) {
+    var left = message.splice(0, message.length/2);
+    var right = message;
+
+    var newLeft = right;
+    var newRight = toArray(toNumber(left) ^ feistel(toNumber(right), key, round));
+    return newLeft.concat(newRight);
+}
+
+function feistel(message, key, round) {
+    return ((9 * key * round) ** message) % getLength(message);
+}
+
+function toNumber(array) {
+    var ans = array[0];
+    for (var i=1; i<array.length; i++) {
+        ans = (ans * 10) + array[i];
+    }
+    return ans;
+}
+
+function toArray(number) {
+    var ans = [];
+    for (var i=getLength(number)-1; i>=0; i--) {
+        ans[i] = number % 10;
+        number = Math.floor(number/10);
+    }
+    return ans;
+}
+
+function getLength(number) {
+    var length = 0;
+    var i = 0;
+    while ((number / 10 ** i) > 10) {
+        i++;
+    }
+    return i + 1;
+}
 */
 
 },{"web3":38}],2:[function(require,module,exports){

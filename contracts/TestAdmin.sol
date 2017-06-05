@@ -27,11 +27,11 @@ contract TestAdmin is mortal {
     mapping(address => Authority) public authorities;
     address[] authorityAddresses;
 
-    uint8 private counter; /*Counter for authorities*/
+    uint8 private counter = 1; /*Counter for authorities*/
     uint8 public noOfAuthorities = 3; /*Number of share colluding authorities*/
 
     int[] private poly = [12, 29, 51];
-    int private N = 101;
+    int private N;
     int[] private shares;
     int[] private s_is;
 
@@ -45,22 +45,27 @@ contract TestAdmin is mortal {
         G = _G;
         H = mpmod(G, poly[0], P);
         Q = (P - 1)/2;
+        N = P;
     }
 
-    function getP() returns (int){
+    function getP() constant returns (int){
         return P;
     }
 
-    function getG() returns (int) {
+    function getG() constant returns (int) {
         return G;
     }
 
-    function getH() returns (int) {
-        returns H;
+    function getH() constant returns (int) {
+        return H;
+    }
+
+    function getNoOfAuthorities() constant returns (uint8) {
+        return noOfAuthorities;
     }
 
     function requestAuthorityStatus(address contractAd) payable returns (bool) {
-        if (authorities[contractAd].registered || counter >= noOfAuthorities) {
+        if (authorities[contractAd].registered == true || counter >= noOfAuthorities) {
             return false;
         }
         authorities[contractAd].id = counter++;
@@ -70,21 +75,29 @@ contract TestAdmin is mortal {
         return true;
     }
 
-    function checkAuthorityStatus(address contractAd) returns (bool) {
+    function checkAuthorityStatus(address contractAd) payable returns (bool) {
         return authorities[contractAd].registered;
     }
 
 
     function getSecretShare(address contractAd) payable returns (int){
-        if (!checkAuthorityStatus(contractAd)) {
-            throw;
+        if (authorities[contractAd].registered == false) {
+            return -1;
         }
         uint8 id = authorities[contractAd].id;
-
+        s_is.push(id);
         return generateShare(id);
     }
 
-    function generateShare(uint8 n_i) returns (int) {
+    function getShareIndex(address contractAd) payable returns (int) {
+        if (authorities[contractAd].registered == false) {
+            return -1;
+        }
+
+        return authorities[contractAd].id;
+    }
+
+    function generateShare(uint8 n_i) payable returns (int) {
         int share = 0;
         int i = 0;
         int l = int(poly.length);
@@ -95,6 +108,31 @@ contract TestAdmin is mortal {
         }
         return share;
     }
+
+    function getLagrangeCoeff(int s_i) returns (int) {
+        return calculateRecombinant(s_i);
+    }
+
+    function reset() {
+        counter = 0;
+        delete shares;
+        delete s_is;
+        for (uint i=0; i<authorityAddresses.length; i++) {
+            delete authorities[authorityAddresses[i]];
+        }
+        delete authorityAddresses;
+    }
+
+    function getCounter() returns (uint8){
+        return counter;
+    }
+
+    function getRegisteredAuthorities() returns (address[]) {
+        return authorityAddresses;
+    }
+
+
+    /* ----------------------- Auxillary Mathematical Functions -------------------- */
 
     function mpmod(int base, int exponent, int modulus) returns (int) {
         if ((base < 1) || (modulus < 1)) {
@@ -116,12 +154,32 @@ contract TestAdmin is mortal {
         return result;
     }
 
-    function reset() {
-        counter = 0;
-        delete shares;
-        delete s_is;
-        for (uint i=0; i<authorityAddresses.length; i++) {
-            delete authorities[authorityAddresses[i]];
-        }
+    function calculateRecombinantHalf(int s_is, int P, int s_i) returns (int) {
+        int b = modularInverse(s_i - s_is, P);
+        return mpmod((-s_is + P) * b, 1, P);
     }
+
+    function calculateRecombinant(int s_i) returns (int) {
+        int recombs = 1;
+        for (uint i=0; i<s_is.length; i++) {
+            if (s_is[i] != s_i) {
+                recombs = mpmod(recombs * calculateRecombinantHalf(s_is[i], P, s_i), 1, P) ;
+            }
+        }
+        return recombs;
+    }
+
+    function modularInverse(int a, int m) returns (int) {
+        if (a < 0) {
+            a = a + m;
+        }
+        for (var i=1; i<m; i++) {
+            if (mpmod(a * i, 1, m) == 1) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+
 }
