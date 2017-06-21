@@ -155,8 +155,16 @@ app.get('/candidates', function (req, res) {
   res.send(BVConfigs.candidates);
 });
 
+app.get('/photo/:candidate', function (req, res) {
+  res.sendFile(__dirname + "/statics/" + req.params.candidate + ".jpg");
+});
+
 app.get('/params', function(req, res) {
   res.send(BVConfigs.params);
+});
+
+app.get('/title', function(req, res) {
+  res.send(BVConfigs.name);
 });
 
 app.get('/vote/:candidate', function (req, res) {

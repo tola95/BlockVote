@@ -338,6 +338,16 @@ var testAdminABI = [{
 }, {
     constant: false,
     inputs: [],
+    name: "getSis",
+    outputs: [{
+        name: "",
+        type: "int256[]"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
     name: "kill",
     outputs: [],
     payable: false,
@@ -359,6 +369,19 @@ var testAdminABI = [{
     outputs: [{
         name: "",
         type: "uint8"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: true,
+    inputs: [{
+        name: "i",
+        type: "uint8"
+    }],
+    name: "getRegisteredAuthority",
+    outputs: [{
+        name: "",
+        type: "address"
     }],
     payable: false,
     type: "function"
@@ -454,7 +477,7 @@ var testAdminABI = [{
     payable: true,
     type: "function"
 }, {
-    constant: false,
+    constant: true,
     inputs: [],
     name: "getRegisteredAuthorities",
     outputs: [{
@@ -514,6 +537,16 @@ var testAdminABI = [{
 }, {
     constant: false,
     inputs: [],
+    name: "getShares",
+    outputs: [{
+        name: "",
+        type: "int256[]"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [],
     name: "reset",
     outputs: [],
     payable: false,
@@ -558,7 +591,7 @@ var testAdminABI = [{
     payable: false,
     type: "constructor"
 }];
-var testAdminAddress = "0x91b68ea774463362e3e0226d4b868efc006c9a07";
+var testAdminAddress = "0xffbac6eeaf44c862328bf8b87dba0bf0f43253b6";
 var testAdmin = web3.eth.contract(testAdminABI).at(testAdminAddress);
 
 var testAuthABI = [{
@@ -575,6 +608,22 @@ var testAuthABI = [{
     constant: false,
     inputs: [],
     name: "tally_h",
+    outputs: [{
+        name: "",
+        type: "int256"
+    }],
+    payable: false,
+    type: "function"
+}, {
+    constant: false,
+    inputs: [{
+        name: "x",
+        type: "int256"
+    }, {
+        name: "y",
+        type: "int256"
+    }],
+    name: "revealSum",
     outputs: [{
         name: "",
         type: "int256"
@@ -850,9 +899,24 @@ var testAuthABI = [{
     inputs: [],
     payable: false,
     type: "constructor"
-}]
-var testAuthAddress = "0x86036b9e47e4522f3a892f43c0053127722787b3";
+}];
+var testAuthAddress = "0xd63d32ff3b8f3951dd304b1c06c946b638b029ec";
+//var testAuth2Address = "0x954b861f6bbb62e98b7dd1e358658248283a4eef";
+//var testAuth3Address = "0xdc3b53c9781be14ee18cf81d47354984c9ab6eb5";
+
 var testAuth = web3.eth.contract(testAuthABI).at(testAuthAddress);
+//var testAuth2 = web3.eth.contract(testAuthABI).at(testAuth2Address);
+//var testAuth3 = web3.eth.contract(testAuthABI).at(testAuth3Address);
+
+$(function() {
+    $("#registerForm").on('submit', function (e) {
+        e.preventDefault();
+        var SSN = $('#SSN').val();
+        var AdministratorKey = $('#AdministratorKey').val();
+        console.log(SSN);
+        console.log(AdministratorKey);
+    })
+})
 
 $(function() {
     $("#voteForm").on('submit', function(e) {
@@ -881,11 +945,14 @@ $(function() {
                 console.log(H.c[0]);
                 var random = 52;
                 commitment = generateElGamalCommitment(vote, random, P.c[0], G.c[0], H.c[0]);
+                console.log("Here");
                 console.log(commitment);
                 proof = createZKPForCommitment(vote, random, G.c[0], H.c[0], P.c[0]);
                 console.log(proof);
                 //tryElGamal.sendCommitment(commitment.a, commitment.b);
-
+                testAuth.vote(commitment.a, commitment.b, proof.a.a, proof.a.b, proof.b.a, proof.b.b, proof.d.a, proof.d.b, proof.r.a, proof.r.b, proof.c);
+                //testAuth2.vote(commitment.a, commitment.b, proof.a.a, proof.a.b, proof.b.a, proof.b.b, proof.d.a, proof.d.b, proof.r.a, proof.r.b, proof.c);
+                //testAuth3.vote(commitment.a, commitment.b, proof.a.a, proof.a.b, proof.b.a, proof.b.b, proof.d.a, proof.d.b, proof.r.a, proof.r.b, proof.c);
             });
 
 
@@ -910,7 +977,7 @@ function mpmod(base, exponent, modulus) {
     }
     if (exponent < 0) {
         while (exponent < 0) {
-            exponent += ((modulus - 1)/2);
+            exponent = parseInt(exponent) + parseInt((modulus - 1)/2);
         }
     }
     result = 1;
@@ -1020,7 +1087,8 @@ function retrieveMessage(x, y, shares, recombCoeffs) {
     for (var i=0; i<shares.length; i++) {
         divider = mpmod(divider * mpmod(x, shares[i], P), recombCoeffs[i], P);
     }
-    return mpmod(y * mpmod(divider, -1, P), 1, P);
+    var exp = mpmod(y * mpmod(divider, -1, P), 1, P);
+    return logs[exp] - 1;
 }
 
 /*

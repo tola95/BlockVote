@@ -1,20 +1,47 @@
 /**
  * Created by OmotolaBabasola1 on 07/04/2017.
  */
-angular.module('BVMain', [])
+var BVMain = angular.module('BVMain', []);
 
-.controller('home', function($scope, $http) {
-        $http.get('/candidates/').then(function(data) {
-            $scope.candidates = data.data;
-        });
+BVMain.factory('TimeService', function() {
+    return {
+        registrationTimeOver: true,
+        tallyTimeBegan: false
+    };
+});
 
-    /*
-    $scope.submit = function() {
-        //$http.get('/vote/' + $scope.candidate).then(function (data) {
+BVMain.controller('home', function($scope, $http, TimeService) {
+    $scope.registrationTimeOver = TimeService.registrationTimeOver;
+    $scope.tallyTimeBegan = TimeService.tallyTimeBegan;
 
-        //})
-        var candidate = $scope.candidate
+    $http.get('/candidates/').then(function(data) {
+        $scope.candidates = data.data;
+    });
 
-    }
-    */
+    $http.get('/title/').then(function(data) {
+        $scope.title = data.data;
+    });
+
  });
+
+BVMain.controller('register', function($scope, $http, TimeService) {
+    $scope.registrationTimeOver = TimeService.registrationTimeOver;
+    $scope.tallyTimeBegan = TimeService.tallyTimeBegan;
+
+    $http.get('/title/').then(function(data) {
+        $scope.title = data.data;
+    });
+});
+
+BVMain.controller('tally', function($scope, $http, TimeService) {
+    $scope.registrationTimeOver = TimeService.registrationTimeOver;
+    $scope.tallyTimeBegan = TimeService.tallyTimeBegan;
+
+    $http.get('/candidates/').then(function(data) {
+        $scope.candidates = data.data;
+    });
+
+    $http.get('/title/').then(function(data) {
+        $scope.title = data.data;
+    });
+});

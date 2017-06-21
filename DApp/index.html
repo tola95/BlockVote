@@ -12,29 +12,71 @@
 </head>
 
 <body class="container" ng-app="BVMain">
-<div ng-controller="home">
+<div ng-show="!registrationTimeOver && !tallyTimeBegan" ng-controller="register">
     <h1>BlockVote</h1>
+    <h3>Welcome to Election {{title}}! Please type your private key and SSN number to register</h3>
+    <h3>Deadline for registration is 07 days 13 hours 57 seconds </h3>
+    <form id="registerForm">
+        <input type="text" id="SSN"/>
+        <input type="text" id="AdministratorKey">
+        <input type="submit" id="register" value="Register" class="btn btn-primary"/>
+    </form>
+</div>
+
+
+<div ng-show="registrationTimeOver && !tallyTimeBegan" ng-controller="home">
+    <h1>BlockVote</h1>
+    <h3>Welcome to Election {{title}}! Please type your private key and prefered candidate to vote</h3>
+    <h3>Deadline to vote is 00 days 07 hours 13 seconds </h3>
+
     <div class="table-responsive">
 
         <table class="table table-bordered">
             <thead>
                 <tr>
                     <th>Candidate</th>
-                    <th>Votes</th>
+                    <th>Image</th>
                 </tr>
             </thead>
             <tbody>
                 <tr ng-repeat="candidate in candidates">
                     <td>{{candidate.name}}</td>
-                    <td id="{{candidate.name}}"></td>
+                    <td>{{candidate.photo}}<img ng-src="/photo/{{candidate.name}}" alt="{{candidate.name}}" height="200" width="300"/></td>
                 </tr>
             </tbody>
         </table>
     </div>
     <form id="voteForm">
-        <input type="text" id="candidate"/>
+        Candidate: <input type="text" id="candidate"/>
+        Key: <input type="text" id="AuthorityKey">
         <input type="submit" id="vote" value="Vote" class="btn btn-primary"/>
     </form>
 </div>
+
+<div ng-show="registrationTimeOver && tallyTimeBegan" ng-controller="tally">
+    <h1>BlockVote</h1>
+    <h3>Welcome to Election {{title}}! The election is now over</h3>
+
+    <div class="table-responsive">
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>Candidate</th>
+                <th>Image</th>
+                <th>Votes</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr ng-repeat="candidate in candidates">
+                <td>{{candidate.name}}</td>
+                <td id="{{candidate.name}}">{{candidate.photo}}<img ng-src="/photo/{{candidate.name}}" alt="{{candidate.name}}" height="200" width="300"/></td>
+                <td>{{candidate.votes}}</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 </body>
 </html>

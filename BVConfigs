@@ -1,14 +1,16 @@
 {
-  "name" : "Lit 2017",
+  "name" : "Presidential 2017",
   "candidates" : [
     {
-      "name" : "Quavo",
-      "id" : "1"
+      "name" : "Clinton",
+      "id" : "1",
+      "votes": "3"
     },
 
     {
-      "name" : "Falz",
-      "id" : "-1"
+      "name" : "Trump",
+      "id" : "-1",
+      "votes": "2"
     }
   ],
   "voters" : [

@@ -1,20 +1,22 @@
 pragma solidity ^0.4.9;
 
+import "./TestAdmin.sol";
+
 /*
  * @title mortal
  * Functionality for killing contracts
  *  Author: Omotola Babasola
  */
+
+/*
 contract mortal {
-    /* Define variable owner of the type address*/
     address owner;
 
-    /* this function is executed at initialization and sets the owner of the contract */
     function mortal() { owner = msg.sender; }
 
-    /* Function to recover the funds on the contract */
     function kill() { if (msg.sender == owner) selfdestruct(owner); }
 }
+
 
 contract TestAdmin is mortal {
 
@@ -57,7 +59,16 @@ contract TestAdmin is mortal {
     function getCounter() returns (uint8) {
     }
 
-    function getRegisteredAuthorities() returns (address[]) {
+    function getRegisteredAuthorities() constant returns (address[]) {
+    }
+
+    function getRegisteredAuthority(uint8 i) constant returns (address) {
+    }
+
+    function getSis() returns (int[]) {
+    }
+
+    function getShares() returns (int[]) {
     }
 
     function mpmod(int base, int exponent, int modulus) returns (int) {
@@ -73,11 +84,12 @@ contract TestAdmin is mortal {
     }
 
 }
-
+*/
 contract TestAuth is mortal {
 
     int secret;
-    address testAdminAddress = 0x91b68ea774463362e3e0226d4b868efc006c9a07;
+    address testAdminAddress;
+    TestAdmin testAdmin;
 
     int G;
     int Hj;
@@ -90,6 +102,8 @@ contract TestAuth is mortal {
 
     Commitment[] authorityCommitments;
     Share[] shares;
+
+    address[] authorityAddresses;
 
     /* ----------------------- Internal Structs -------------------- */
 
@@ -106,11 +120,13 @@ contract TestAuth is mortal {
 
     /* ----------------------- Initial configuration functions -------------------- */
 
-    function TestAuth() {
+    function TestAuth(address adminAddress) {
+        testAdminAddress = adminAddress;
+        testAdmin = TestAdmin(testAdminAddress);
+        generateLookupTable();
     }
 
     function requestAuthorityStatus() returns (bool) {
-        TestAdmin testAdmin = TestAdmin(testAdminAddress);
         return testAdmin.requestAuthorityStatus(address(this));
     }
 
@@ -119,19 +135,16 @@ contract TestAuth is mortal {
     }
 
     function setConfigs() {
-        TestAdmin testAdmin = TestAdmin(testAdminAddress);
         Hj = mpmod(G, secret, P);
         Q = (P - 1)/2;
         noOfAuthorities = testAdmin.getNoOfAuthorities();
     }
 
     function setSecret() {
-        TestAdmin testAdmin = TestAdmin(testAdminAddress);
         secret = testAdmin.getSecretShare(address(this));
     }
 
     function setGP() {
-        TestAdmin testAdmin = TestAdmin(testAdminAddress);
         G = testAdmin.getG();
         P = testAdmin.getP();
     }
@@ -215,7 +228,7 @@ contract TestAuth is mortal {
     }
 
     /* Receive commitment from another Authority, for tallying purposes */
-    function sendAuthorityCommitment(address authority, int x, int y) {
+    function sendAuthorityCommitment(/*address authority,*/ int x, int y) {
         /*ToDo: Check that authority is registered */
 
         authorityCommitments.push(Commitment({
@@ -246,8 +259,7 @@ contract TestAuth is mortal {
     }
 
     /* ToDo: Receive Authority shares */
-    function receiveShare(address authority) {
-        TestAdmin testAdmin = TestAdmin(testAdminAddress);
+/*    function receiveShare(address authority) {
         int s_i = testAdmin.getShareIndex(authority);
         int share = testAdmin.getSecretShare(authority);
         int lagrangeCoeff = testAdmin.getLagrangeCoeff(s_i);
@@ -257,6 +269,41 @@ contract TestAuth is mortal {
             share: share,
             lagrangeCoeff: lagrangeCoeff
         }));
+    } */
+
+    function revealSum(int x, int y) returns (int) {
+
+        if (authorityAddresses.length == 0) {
+            for (uint8 i=0; i<noOfAuthorities; i++) {
+                authorityAddresses.push(testAdmin.getRegisteredAuthority(i));
+            }
+        }
+
+        if (shares.length == 0) {
+            for (i=0; i<authorityAddresses.length; i++) {
+                receiveShare(authorityAddresses[i]);
+            }
+        }
+
+        if (shares.length < noOfAuthorities) {
+            return -1;
+        }
+
+        int divider = 1;
+        for (i=0; i<shares.length; i++) {
+            divider = mpmod(divider * mpmod(x, shares[i].share, P), shares[i].lagrangeCoeff, P);
+        }
+        int exp = mpmod(y * mpmod(divider, -1, P), 1, P);
+        return logTable[exp] - 1;
+
+    }
+
+    function getAuthorityAddresses() returns (address[]) {
+        return authorityAddresses;
+    }
+
+    function getShare(uint8 i) returns (int) {
+        return shares[i].share;
     }
 
     /* ----------------------- Auxillary Mathematical Functions -------------------- */

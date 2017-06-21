@@ -65,10 +65,11 @@ contract TestAdmin is mortal {
     }
 
     function requestAuthorityStatus(address contractAd) payable returns (bool) {
-        if (authorities[contractAd].registered == true || counter >= noOfAuthorities) {
+        if (authorities[contractAd].registered == true || counter > noOfAuthorities) {
             return false;
         }
-        authorities[contractAd].id = counter++;
+        authorities[contractAd].id = counter;
+        counter++;
         authorities[contractAd].ad = contractAd;
         authorities[contractAd].registered = true;
         authorityAddresses.push(contractAd);
@@ -108,7 +109,7 @@ contract TestAdmin is mortal {
         }
         return share;
     }
-
+/*
     function getLagrangeCoeff(int s_i) returns (int) {
         return calculateRecombinant(s_i);
     }
@@ -122,13 +123,25 @@ contract TestAdmin is mortal {
         }
         delete authorityAddresses;
     }
-
+*/
     function getCounter() returns (uint8){
         return counter;
     }
 
-    function getRegisteredAuthorities() returns (address[]) {
+    function getRegisteredAuthorities() constant returns (address[]) {
         return authorityAddresses;
+    }
+
+    function getRegisteredAuthority(uint8 i) constant returns (address) {
+        return authorityAddresses[i];
+    }
+
+    function getSis() returns (int[]) {
+        return s_is;
+    }
+
+    function getShares() returns (int[]) {
+        return shares;
     }
 
 
@@ -153,7 +166,7 @@ contract TestAdmin is mortal {
         }
         return result;
     }
-
+/*
     function calculateRecombinantHalf(int s_is, int P, int s_i) returns (int) {
         int b = modularInverse(s_i - s_is, P);
         return mpmod((-s_is + P) * b, 1, P);
@@ -180,6 +193,12 @@ contract TestAdmin is mortal {
         }
         return -1;
     }
-
+*/
 
 }
+
+
+
+
+
+
