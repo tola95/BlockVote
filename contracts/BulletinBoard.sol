@@ -1,0 +1,96 @@
+pragma solidity ^0.4.9;
+
+import "./Administrator.sol";
+import "./Authority.sol";
+import "./Authority2.sol";
+import "./Authority3.sol";
+
+contract BulletinBoard {
+
+    Administrator administrator;
+
+    int P;
+
+    Commitment[] commitments;
+
+    struct Commitment {
+        int a;
+        int b;
+    }
+
+    function BulletinBoard(address administratorAd) {
+        administrator = Administrator(administratorAd);
+        P = administrator.getP();
+    }
+
+    function sendCommitment(int a, int b) returns (bool) {
+            commitments.push(Commitment({
+                a: a,
+                b: b
+            }));
+            return true;
+    }
+
+    int[] printedCommitments;
+    function getPrintedCommitments() returns (int[]) {
+        if (printedCommitments.length == 0) {
+            for (uint8 i=0; i<commitments.length; i++) {
+                printedCommitments.push(commitments[i].a);
+                printedCommitments.push(commitments[i].b);
+            }
+        }
+        return printedCommitments;
+    }
+
+    /*--------- Post Deadline -------*/
+
+    function tally_g() returns (int) {
+        Commitment memory a = tallyCommitments();
+        return a.a;
+    }
+
+    function tally_h() returns (int) {
+        Commitment memory a = tallyCommitments();
+        return a.b;
+    }
+
+    function tallyCommitments() private returns (Commitment memory) {
+        if (commitments.length == 0) {
+            throw;
+        }
+        Commitment memory prod = commitments[0];
+        for (uint i=1; i<commitments.length; i++) {
+            prod = multiplyCommitments(prod, commitments[i]);
+        }
+        return prod;
+    }
+
+    function multiplyCommitments(Commitment a, Commitment b) private returns (Commitment memory) {
+        Commitment memory prod;
+        prod.a = mpmod(a.a * b.a, 1, P);
+        prod.b = mpmod(a.b * b.b, 1, P);
+        return prod;
+    }
+
+    function mpmod(int base, int exponent, int modulus) returns (int) {
+        if ((base < 1) || (modulus < 1)) {
+            throw;
+        }
+        if (exponent < 0) {
+            while (exponent < 0) {
+                exponent += ((modulus - 1)/2);
+            }
+        }
+        int result = 1;
+        while (exponent > 0) {
+            if ((exponent % 2) == 1) {
+                result = (result * base) % modulus;
+            }
+            base = (base * base) % modulus;
+            exponent = exponent / 2;
+        }
+        return result;
+    }
+
+
+}

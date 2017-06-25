@@ -31,20 +31,38 @@ eth.estimateGas({data: testAuthData})
 
 var d = testAuth.requestAuthorityStatus().getData({from:web3.eth.accounts[0], gas: 3000000})
 
+web3.eth.defaultAccount = web3.eth.accounts[0];
+
 var administrator;Administrator.deployed().then(function(instance) {administrator = instance;return administrator.getRegisteredAuthorities.call();});
 
 var authority;Authority.deployed().then(function(instance) {authority = instance; return authority.requestAuthorityStatus(); });
 var authority2;Authority2.deployed().then(function(instance) {authority2 = instance; return authority2.requestAuthorityStatus(); });
 var authority3;Authority3.deployed().then(function(instance) {authority3 = instance; return authority3.requestAuthorityStatus(); });
+var bulletinBoard; BulletinBoard.deployed().then(function(instance){bulletinBoard = instance;});
 
 administrator.getRegisteredAuthorities.call();
 
 authority.setConfigs();
+authority.setBulletinBoard(bulletinBoard.address);
 authority2.setConfigs();
+authority2.setBulletinBoard(bulletinBoard.address);
 authority3.setConfigs();
+authority3.setBulletinBoard(bulletinBoard.address);
+
+authority.getG.call();
+authority.getSecret.call();
+
+administrator.register(1);
+
+authority.vote(85, 25, 11, 83, 48, 62, 41, -19, 17, 1024, 22);
+authority.vote.call(85, 25, 11, 83, 48, 62, 41, -19, 17, 1024, 22);
 
 authority.sendShare(authority2.address, authority3.address);
 authority2.sendShare(authority.address, authority3.address);
 authority3.sendShare(authority.address, authority2.address);
 
-authority.generateSecret();
+authority.setCommitment(authority2.address, authority3.address);
+authority2.setCommitment(authority.address, authority3.address);
+authority3.setCommitment(authority.address, authority2.address);
+
+authority2.revealSum.call(authority2.generateSecret());
