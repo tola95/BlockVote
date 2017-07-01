@@ -53,6 +53,7 @@ authority.getG.call();
 authority.getSecret.call();
 
 administrator.register(1);
+administrator.register.call(1);
 
 authority.vote(85, 25, 11, 83, 48, 62, 41, -19, 17, 1024, 22);
 authority.vote.call(85, 25, 11, 83, 48, 62, 41, -19, 17, 1024, 22);
@@ -65,4 +66,6 @@ authority.setCommitment(authority2.address, authority3.address);
 authority2.setCommitment(authority.address, authority3.address);
 authority3.setCommitment(authority.address, authority2.address);
 
-authority2.revealSum.call(authority2.generateSecret());
+authority2.generateSecret.call();
+
+authority2.revealSum.call();
