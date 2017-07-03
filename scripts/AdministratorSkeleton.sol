@@ -60,13 +60,28 @@ contract BVAdministrator is mortal {
     mapping (int => int) public logTable;
     Commitment commitment;
 
-    function Administrator(int _P, int _G, uint8[] _voterIDs) {
+    uint registrationEnd;
+    uint votingEnd;
+
+    modifier onlyBefore(uint _time) {
+        require(now < _time);
+        _;
+    }
+
+    modifier onlyAfter(uint _time) {
+        require(now >= _time);
+        _;
+    }
+
+    function Administrator(int _P, int _G, uint8[] _voterIDs, uint _registrationEnd, uint _votingEnd) {
         P = _P;
         G = _G;
         H = mpmod(G, poly[0], P);
         Q = (P - 1)/2;
         N = P;
         voterIDs = _voterIDs;
+        registrationEnd = _registrationEnd;
+        votingEnd = _votingEnd;
     }
 
     function getP() constant returns (int){
@@ -137,7 +152,8 @@ contract BVAdministrator is mortal {
         bulletinBoard = BVBulletinBoard(bulletinBoardAd);
     }
 
-    function setCommitment() {
+    function setCommitment()
+    onlyAfter(votingEnd) {
         commitment.a = bulletinBoard.tally_g();
         commitment.b = bulletinBoard.tally_h();
     }
@@ -146,7 +162,9 @@ contract BVAdministrator is mortal {
 
     /* ------------ Voter Registration ------------------- */
 
-    function register(uint8 id) returns (uint8) {
+    function register(uint8 id)
+    onlyBefore(registrationEnd)
+    returns (uint8) {
         address voterAd = msg.sender;
         bool eligible;
         for (uint i=0; i<voterIDs.length; i++) {
